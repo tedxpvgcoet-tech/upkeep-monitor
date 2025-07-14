@@ -1,0 +1,41 @@
+name: Check Backend Health
+
+on:
+  schedule:
+    - cron: "0 */4 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: backend-health-check
+  cancel-in-progress: true
+
+jobs:
+  check-backend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install axios
+
+      - name: Check Backend Status
+        run: node upkeep.mjs
+
+      - name: Run alert script if backend is down
+        if: failure()
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Send alert email
+        if: failure()
+        run: python email/upkeep.py
+        env:
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
