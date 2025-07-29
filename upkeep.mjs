@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const URL = "https://tedx-backend-tedz.onrender.com/";
+const URL = "https://www.backend.tedxpvgcoet.in/";
 
 async function checkBackendStatus() {
   try {
