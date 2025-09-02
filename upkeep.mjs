@@ -1,18 +1,29 @@
 import axios from 'axios';
 
 const URL = "https://www.backend.tedxpvgcoet.in/";
+let failCount = 0;
 
 async function checkBackendStatus() {
   try {
     const start = Date.now();
-    const res = await axios.get(URL, { timeout: 100000 });
+    const res = await axios.get(URL, { timeout: 10000 });
     const end = Date.now();
 
     console.log("✅ Backend responded:", res.data || "OK");
     console.log(`⏱️ Response time: ${(end - start) / 1000}s`);
+
+    failCount = 0;
   } catch (err) {
-    console.error("❌ Backend unreachable:", err.message);
-    process.exit(1);
+    failCount++;
+    console.error(`❌ Attempt ${failCount}: ${err.message}`);
+
+    if (failCount <= 3) {
+      await new Promise(r => setTimeout(r, 2000));
+      return checkBackendStatus();
+    } else {
+      console.error("🚨 Backend unreachable after 3 retries.");
+      process.exit(1);
+    }
   }
 }
 
