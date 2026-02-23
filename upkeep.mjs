@@ -6,7 +6,7 @@ let failCount = 0;
 async function checkBackendStatus() {
   try {
     const start = Date.now();
-    const res = await axios.get(URL, { timeout: 10000 });
+    const res = await axios.get(URL, { timeout: 40000 });
     const end = Date.now();
 
     console.log("✅ Backend responded:", res.data || "OK");
